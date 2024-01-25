@@ -1,11 +1,12 @@
 #!/usr/bin/env bash
 # display time for 12h & 59m
 
-hour=0
-while [ $hour -lt 12 ]; do
+hour=-1
+minute=1
+while ((hour++<12)); do
     echo "Hour: $hour"
-    for ((minute=1; minute<=59; minute++)); do
-        echo $minute
+    minute=0
+    while ((minute++<59)); do
+    echo $minute
     done
-    ((hour++))
 done
