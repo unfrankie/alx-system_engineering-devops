@@ -1,0 +1,6 @@
+#!/usr/bin/env bash
+# list the content of current directory showing only the part after 1st -
+
+for file in *; do
+    echo "${file#*-}"
+done
