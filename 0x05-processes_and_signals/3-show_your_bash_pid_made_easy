@@ -1,3 +1,4 @@
 #!/usr/bin/env bash
 # display the PID and name of processes containing bash
+# cannot use ps
 pgrep -l bash
