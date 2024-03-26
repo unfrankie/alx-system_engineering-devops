@@ -1,47 +1,24 @@
 # Install and configures Nginx web server
 package { 'nginx':
-  ensure => installed,
+  ensure => 'installed',
 }
+
 file { '/var/www/html/index.html':
-  ensure  => present,
-  content => "Hello World!\n",
+  ensure  => 'file',
+  content => 'Hello World!',
+  mode    => '0644',
+  require => Package['nginx'],
 }
-file { '/etc/nginx/sites-available/redirect_me':
-  ensure  => present,
-  content => "server {
-    listen 80;
-    server_name _;
-    location /redirect_me {
-        return 301 https://www.youtube.com/watch?v=QH2-TGUlwu4;
-    }
-}",
+
+exec { 'append_redirect_me':
+  command     => "/usr/bin/sed -i '/^}$/i \\ \n\tlocation /redirect_me {return 301 https://www.youtube.com/watch?v=QH2-TGUlwu4;}' /etc/nginx/sites-available/default",
+  path        => ['/bin', '/usr/bin'],
+  refreshonly => true,
+  subscribe   => Package['nginx'],
 }
-file { '/etc/nginx/sites-enabled/redirect_me':
-  ensure => link,
-  target => '/etc/nginx/sites-available/redirect_me',
-}
-file { '/var/www/html/404.html':
-  ensure  => present,
-  content => "Ceci n'est pas une page\n",
-}
-file { '/etc/nginx/sites-available/custom_404':
-  ensure  => present,
-  content => "server {
-    listen 80 default_server;
-    server_name _;
-    error_page 404 /404.html;
-    location = /404.html {
-        root /var/www/html;
-        internal;
-    }
-}",
-}
-file { '/etc/nginx/sites-enabled/custom_404':
-  ensure => link,
-  target => '/etc/nginx/sites-available/custom_404',
-}
+
 service { 'nginx':
-  ensure    => running,
-  enable    => true,
-  subscribe => File['/etc/nginx/sites-enabled/redirect_me', '/etc/nginx/sites-enabled/custom_404'],
+  ensure  => 'running',
+  enable  => true,
+  require => Package['nginx'],
 }
