@@ -1,0 +1,12 @@
+#!/usr/bin/env bash
+# Install and configures HAProxy as a load balancer
+sudo apt update
+sudo apt install haproxy -y
+sudo tee -a /etc/haproxy/haproxy.cfg > /dev/null <<EOF
+listen myserver
+    bind *:80	
+	balance roundrobin
+	server server1 54.197.50.4 check
+	server server2 34.229.137.21 check
+EOF
+sudo service haproxy restart
