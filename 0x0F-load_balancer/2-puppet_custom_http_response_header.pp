@@ -1,16 +1,17 @@
 # Configure Nginx to include a custom HTTP response header
-exec { 'update_package_lists':
-  command     => '/usr/bin/apt-get update',
+class nginx_custom_http_response_header {
+  package { 'nginx':
+    ensure => installed,
+  }
+  file { '/etc/nginx/conf.d/custom_headers.conf':
+    ensure  => present,
+    content => template('nginx/custom_headers.conf.erb'),
+    notify  => Service['nginx'],
+  }
+  service { 'nginx':
+    ensure    => running,
+    enable    => true,
+    subscribe => File['/etc/nginx/conf.d/custom_headers.conf'],
+  }
 }
-package { 'nginx':
-  ensure => installed,
-}
-file_line { 'header_served_by':
-  path     => '/etc/nginx/sites-available/default',
-  match    => '^server {',
-  line     => "server {\n\tadd_header X-Served-By \"${hostname}\";",
-  multiple => false,
-}
-exec { 'restart_nginx':
-  command     => '/usr/sbin/service nginx restart',
-}
+include nginx_custom_http_response_header
