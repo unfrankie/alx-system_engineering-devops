@@ -1,13 +1,11 @@
 #!/usr/bin/env bash
-# Configure Nginx server to have a custom 404 page
-
-sudo apt-get update -y -qq && sudo apt-get install nginx -y
-sudo service nginx start
-sudo ufw allow 'Nginx HTTP'
-sudo chown -R "$USER":"$USER" /var/www/html
-sudo chmod -R 755 /var/www
-echo -e "Hello World!" > /var/www/html/index.html
-sudo sed -i '/^}$/i \ \n\tlocation \/redirect_me {return 301 https:\/\/www.youtube.com\/watch?v=QH2-TGUlwu4;}' /etc/nginx/sites-available/default
-sudo sed -i '/^}$/i \ \n\tlocation @404 {return 404 "Ceci n'\''est pas une page\\n";}' /etc/nginx/sites-available/default
-sudo sed -i 's/=404/@404/g' /etc/nginx/sites-available/default
+# Double the number of webservers
+sudo apt-get -y update
+sudo apt-get -y install nginx
+config="/etc/nginx/sites-available/default"
+sudo sh -c "echo 'Hello World!' > /var/www/html/index.nginx-debian.html"
+sudo sed -i '/^}$/i \ \n\tlocation \/redirect_me {return 301 https:\/\/www.youtube.com\/watch?v=QH2-TGUlwu4;}' $config
+sudo sed -i '/^}$/i \ \n\tlocation @404 {return 404 "Ceci n'\''est pas une page\\n";}' $config
+sudo sed -i 's/=404/@404/g' $config
+sudo sed -i "0,/location \/ {/s/location \/ {/&\n\t\tadd_header X-Served-By '$HOSTNAME';/" $config
 sudo service nginx restart
