@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Double the number of webservers
+# Configure Nginx to include a custom HTTP response header
 sudo apt-get -y update
 sudo apt-get -y install nginx
 config="/etc/nginx/sites-available/default"
