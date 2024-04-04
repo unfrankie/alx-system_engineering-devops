@@ -1,0 +1,22 @@
+global
+    daemon
+    maxconn 256
+
+defaults
+    mode http
+    timeout connect 5000ms
+    timeout client 50000ms
+    timeout server 50000ms
+
+frontend www-http
+    bind *:80
+    redirect scheme https if !{ ssl_fc }
+
+frontend www-https
+    bind *:443 ssl crt /etc/ssl/certs/www.unfrankie.tech.pem
+    reqadd X-Forwarded-Proto:\ https
+    default_backend servers
+
+backend servers
+    server web1 54.197.50.4:80 check
+    server web2 34.229.137.21:80 check
