@@ -5,7 +5,7 @@ display_info() {
     local domain="$1"
     local subdomains=("www" "lb-01" "web-01" "web-02")
     for sub in "${subdomains[@]}"; do
-        dig_output=$(dig "$sub.$domain" | awk '/ANSWER SECTION:/ {getline; print "The subdomain '"$sub"' is A "$4" record and points to "$5}')
+        dig_output=$(dig "$sub.$domain" | awk '/ANSWER SECTION:/ {getline; print "The subdomain '"$sub"' is a "$4" record and points to "$5}')
         echo "$dig_output"
     done
 }
