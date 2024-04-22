@@ -1,40 +1,31 @@
 #!/usr/bin/python3
-import sys
+"""Export to CSV"""
+import csv
 import requests
-import json
+import sys
 
-def gather_data_from_api(employee_id):
-    url = 'https://jsonplaceholder.typicode.com/todos?userId={}'.format(employee_id)
+
+def export_to_csv(employee_id):
+    """Export employee's tasks to CSV file"""
+    url = f"https://jsonplaceholder.typicode.com/todos?userId={employee_id}"
     response = requests.get(url)
     todos = response.json()
+    user_url = f"https://jsonplaceholder.typicode.com/users/{employee_id}"
+    user_info = requests.get(user_url).json()
+    employee_name = user_info.get('username')
+    if not employee_name:
+        return print("Employee not found.")
+    filename = f"{employee_id}.csv"
+    with open(filename, mode='w', newline='') as file:
+        writer = csv.writer(file, quoting=csv.QUOTE_ALL)
+        for task in todos:
+            writer.writerow([employee_id, employee_name, task.get('completed'), task.get('title')])
+    print(f"Tasks exported to {filename}")
 
-    if not todos:
-        print("No data found for employee ID: {}".format(employee_id))
-        return
-
-    total_tasks = len(todos)
-    completed_tasks = [todo for todo in todos if todo['completed']]
-
-    employee_name = todos[0]['userId']  # Assuming employee name is not provided in API
-
-    print("Employee {} is done with tasks({}/{}):".format(employee_name, len(completed_tasks), total_tasks))
-    for task in completed_tasks:
-        print("\t{}".format(task['title']))
-
-    return todos
-
-def export_to_json(data, filename):
-    with open(filename, 'w') as json_file:
-        json.dump(data, json_file, indent=4)
-    print("Data exported to", filename)
 
 if __name__ == "__main__":
-    if len(sys.argv) != 3:
-        print("Usage: {} <employee_id> <output_file>".format(sys.argv[0]))
+    if len(sys.argv) != 2 or not sys.argv[1].isdigit():
+        print("Usage: ./1-export_to_CSV.py employee_id")
         sys.exit(1)
-
     employee_id = int(sys.argv[1])
-    output_file = sys.argv[2]
-
-    todo_data = gather_data_from_api(employee_id)
-    export_to_json(todo_data, output_file)
+    export_to_csv(employee_id)
