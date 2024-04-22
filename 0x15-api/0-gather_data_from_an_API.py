@@ -1,8 +1,16 @@
 #!/usr/bin/python3
+"""
+Retrieves data from an API
+This script retrieves data from a given API endpoint and
+prints information about a specified employee
+"""
 import sys
 import requests
 
 def gather_data_from_api(employee_id):
+    """
+    Retrieve information about a specified employee
+    """
     url = 'https://jsonplaceholder.typicode.com/todos?userId={}'.format(employee_id)
     response = requests.get(url)
     todos = response.json()
@@ -19,6 +27,7 @@ def gather_data_from_api(employee_id):
     print("Employee {} is done with tasks({}/{}):".format(employee_name, len(completed_tasks), total_tasks))
     for task in completed_tasks:
         print("\t{}".format(task['title']))
+
 
 if __name__ == "__main__":
     if len(sys.argv) != 2:
