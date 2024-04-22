@@ -19,11 +19,12 @@ def export_to_csv(employee_id):
     with open(filename, mode='w', newline='') as file:
         writer = csv.writer(file, quoting=csv.QUOTE_ALL)
         for task in todos:
-            writer.writerow([employee_id,
-                             employee_name,
-                             task.get('completed'),
-                             task.get('title')
-                            ])
+            writer.writerow([
+                employee_id,
+                employee_name,
+                task.get('completed'),
+                task.get('title')
+            ])
     print(f"Tasks exported to {filename}")
 
 
