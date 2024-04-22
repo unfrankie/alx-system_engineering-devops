@@ -1,7 +1,7 @@
 #!/usr/bin/python3
 """Gather data from an API"""
-import sys
 import requests
+import sys
 
 
 def get_todo_list(employee_id):
@@ -20,7 +20,8 @@ def get_todo_list(employee_id):
     print(f"Employee {employee_name}\
      is done with tasks ({completed_count}/{total_tasks}):")
     for task in completed_tasks:
-        print("\t", task.get('title'))
+        output += f"\t{task.get('title')}\n"
+    return output
 
 
 if __name__ == "__main__":
