@@ -20,8 +20,7 @@ def get_todo_list(employee_id):
     print(f"Employee {employee_name}\
      is done with tasks ({completed_count}/{total_tasks}):")
     for task in completed_tasks:
-        output += f"\t{task.get('title')}\n"
-    return output
+        print("\t", task.get('title'))
 
 
 if __name__ == "__main__":
