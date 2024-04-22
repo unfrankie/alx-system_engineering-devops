@@ -14,8 +14,8 @@ if __name__ == "__main__":
         user_id = user['id']
         username = user['username']
 
-        todo_url = f'https://jsonplaceholder.typicode.com/users/{user_id}/todos'
-        todos = requests.get(todo_url).json()
+        td_url = f'https://jsonplaceholder.typicode.com/users/{user_id}/todos'
+        todos = requests.get(td_url).json()
 
         user_tasks = []
         for todo in todos:
