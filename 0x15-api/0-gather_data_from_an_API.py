@@ -1,38 +1,30 @@
 #!/usr/bin/python3
-"""
-Retrieves data from an API
-This script retrieves data from a given API endpoint and
-prints information about a specified employee
-"""
+"""Gather data from an API"""
 import sys
 import requests
 
-def gather_data_from_api(employee_id):
-    """
-    Retrieve information about a specified employee
-    """
-    url = 'https://jsonplaceholder.typicode.com/todos?userId={}'.format(employee_id)
+
+def get_todo_list(employee_id):
+    """Retrieve and display TODO list progress for a given employee ID"""
+    url = f"https://jsonplaceholder.typicode.com/todos?userId={employee_id}"
     response = requests.get(url)
     todos = response.json()
-
-    if not todos:
-        print("No data found for employee ID: {}".format(employee_id))
-        return
-
+    user_url = f"https://jsonplaceholder.typicode.com/users/{employee_id}"
+    user_info = requests.get(user_url).json()
+    employee_name = user_info.get('name')
+    if not employee_name:
+        return print("Employee not found.")
+    completed_tasks = [task for task in todos if task.get('completed')]
     total_tasks = len(todos)
-    completed_tasks = [todo for todo in todos if todo['completed']]
-
-    employee_name = todos[0]['userId']
-
-    print("Employee {} is done with tasks({}/{}):".format(employee_name, len(completed_tasks), total_tasks))
+    completed_count = len(completed_tasks)
+    print(f"Employee {employee_name} is done with tasks ({completed_count}/{total_tasks}):")
     for task in completed_tasks:
-        print("\t{}".format(task['title']))
+        print("\t", task.get('title'))
 
 
 if __name__ == "__main__":
-    if len(sys.argv) != 2:
-        print("Usage: {} <employee_id>".format(sys.argv[0]))
+    if len(sys.argv) != 2 or not sys.argv[1].isdigit():
+        print("Usage: ./0-gather_data_from_an_API.py employee_id")
         sys.exit(1)
-
     employee_id = int(sys.argv[1])
-    gather_data_from_api(employee_id)
+    get_todo_list(employee_id)
