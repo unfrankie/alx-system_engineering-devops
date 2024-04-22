@@ -1,35 +1,36 @@
 #!/usr/bin/python3
-import sys
+"""Export to JSON"""
 import json
+import requests
+import sys
 
-def read_data_from_json(filename):
-    try:
-        with open(filename, 'r') as json_file:
-            data = json.load(json_file)
-        return data
-    except FileNotFoundError:
-        print("File not found:", filename)
-        sys.exit(1)
-    except json.JSONDecodeError:
-        print("Error decoding JSON file:", filename)
-        sys.exit(1)
 
-def print_completed_tasks(data, user_id):
-    user_tasks = [task['title'] for task in data if task['userId'] == user_id and task['completed']]
-    if user_tasks:
-        print("Completed tasks for user {}:".format(user_id))
-        for task in user_tasks:
-            print("\t{}".format(task))
-    else:
-        print("No completed tasks found for user {}.".format(user_id))
+def export_to_json(employee_id):
+    """Export employee's tasks to JSON file"""
+    url = f"https://jsonplaceholder.typicode.com/todos?userId={employee_id}"
+    response = requests.get(url)
+    todos = response.json()
+    user_url = f"https://jsonplaceholder.typicode.com/users/{employee_id}"
+    user_info = requests.get(user_url).json()
+    employee_name = user_info.get('username')
+    if not employee_name:
+        return print("Employee not found.")
+    tasks_data = {employee_id: []}
+    for task in todos:
+        tasks_data[employee_id].append({
+            "task": task.get('title'),
+            "completed": task.get('completed'),
+            "username": employee_name
+        })
+    filename = f"{employee_id}.json"
+    with open(filename, 'w') as json_file:
+        json.dump(tasks_data, json_file)
+    print(f"Tasks exported to {filename}")
+
 
 if __name__ == "__main__":
-    if len(sys.argv) != 3:
-        print("Usage: {} <input_file> <user_id>".format(sys.argv[0]))
+    if len(sys.argv) != 2 or not sys.argv[1].isdigit():
+        print("Usage: ./2-export_to_JSON.py employee_id")
         sys.exit(1)
-
-    input_file = sys.argv[1]
-    user_id = int(sys.argv[2])
-
-    todo_data = read_data_from_json(input_file)
-    print_completed_tasks(todo_data, user_id)
+    employee_id = int(sys.argv[1])
+    export_to_json(employee_id)
